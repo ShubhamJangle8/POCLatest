@@ -1,0 +1,12 @@
+{
+  "auth-server-url": "http://localhost:9080/auth",
+  "realm": "demand-tracker",
+  "resource": "demand-tracker-auth-api",
+  "on-load": "login-required",
+  "ssl-required": "external",
+  "verify-token-audience": true,
+  "confidential-port": 0,
+  "credentials": {
+    "secret": "MtOCyWaAw6ki0Q80OdvJ9ygCC26t6VB0"
+  }
+}
