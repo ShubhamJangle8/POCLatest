@@ -26,6 +26,14 @@ import { makeStyles } from "@mui/styles";
 import KeyCloakServices from "../../services/LoginService";
 import EmailService from "../common/Toastr";
 import ChipArray from '../common/ChipArray'
+import Chips from '../common/Chips';
+
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import Slide from '@mui/material/Slide';
 
 export default function CreateRequest() {
   const useStyles = makeStyles({
@@ -51,6 +59,9 @@ export default function CreateRequest() {
       marginLeft: "10 !important",
     },
   });
+  const Transition = React.forwardRef(function Transition(props, ref) {
+    return <Slide direction="up" ref={ref} {...props} />;
+  });
 
   const [startDate, setStartDate] = useState(null);
   const demandTrackerServices = new DemandTrackerServices();
@@ -66,23 +77,23 @@ export default function CreateRequest() {
     projectCode: "",
     landed: "",
     top: "",
-    top3Skills: "",
+    tags: "",
     skill: "",
     jd: "",
     startDate: { startDate },
     createdDate: date(new Date()),
     owner: userName,
     reasonForDemand: "",
+    ifReplacement: "",
     location: "",
     area: "",
     serviceLine: "",
     bucketSkills: "",
-    ifReplacement: "",
   });
 
   const [data, setData] = useState([]);
   const [gradeData, setGradeData] = useState([]);
-  const [chipData, setChipData] = useState([{ key: 1, label: 'hi' }]);
+  const [landedData, setLandedData] = useState([]);
   const [reqGrade, setReqGrade] = useState([]);
   const [skillErrMsg, setSkillErrMsg] = useState();
   const [stackErrMsg, setStackErrMsg] = useState();
@@ -106,6 +117,9 @@ export default function CreateRequest() {
   const [areaErr, setAreaErr] = useState(false);
   const [serviceErr, setServiceErr] = useState(false);
   const [bucketErr, setBucketErr] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [create, setCreate] = useState(false);
+  const [creating, setcreating] = useState(false);
 
   const handleClusterChange = (event) => {
     setForm({ ...form, [event.target.name]: event.target.value }); //using single hook
@@ -183,17 +197,21 @@ export default function CreateRequest() {
       setProjCodeErr(false);
     }
   };
-  const landedData = [{ landedId: 1, landed: 'Offshore' }, { landedId: 2, landed: 'Onshore' }]
+  // const landedData = [{ landedId: 1, landed: 'Offshore' }, { landedId: 2, landed: 'Onshore' }]
   const handleLandedChange = (event) => {
-    setForm({ ...form, [event.target.name]: event.target.value }); //using single hook
-    // setClusterErr(false);
-    // var subData = [];
-    // for (let i = 0; i < landedData.length; i++) {
-    //   if (landedData[i].landedId === event.target.value) {
-    //     subData = data[i].subClusters;
-    //   }
-    // }
+    let landedData = event.target.value;
+    console.log(landedData);
+    setForm({ ...form, [event.target.name]: landedData }); //using single hook
     setLandedErrMsg("")
+    // demandTrackerServices
+    //   .getLandedRequest(landedData)
+    //   .then((res) => {
+    //     setLandedData(res.data);
+    //   })
+    //   .catch((err) => {
+    //     console.log(err);
+    //   });
+    setLandedErr(false);
   };
 
   const handleJdChange = (event) => {
@@ -210,15 +228,15 @@ export default function CreateRequest() {
     }
   };
 
-  const handleTop3skillsChange = (event) => {
-    setForm({ ...form, [event.target.name]: event.target.value }); //using single hook
+  const handleTop3skillsChange = (items) => {
+    setForm({ ...form, tags: items }); //using single hook
   }
 
-  function handleSelectedTags(items) {
-    console.log(items);
+  const handleSelectedTags = (items) => {
+      console.log(items);
   }
   const handleChipArray = () => {
-    console.log(chipData);
+    // console.log(chipData);
     return (
       <ChipArray
         selectedTags={handleSelectedTags}
@@ -228,6 +246,7 @@ export default function CreateRequest() {
         name="tags"
         label="Top 3 Skills"
         rows='1'
+        handleTags = {(items) => handleTop3skillsChange(items)}
       />
     )
   }
@@ -310,8 +329,18 @@ export default function CreateRequest() {
       })
       .catch((err) => { });
     demandTrackerServices
+      .getAllLandedData()
+      .then((res) => {
+        console.log(res.data);
+        setLandedData(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+    demandTrackerServices
       .getAllGrades()
       .then((res) => {
+        console.log(res.data);
         setGradeData(res.data);
       })
       .catch((err) => {
@@ -342,7 +371,7 @@ export default function CreateRequest() {
     setUserName(KeyCloakServices.getName() + "");
   }, []);
 
-  const handleSubmit = (event) => {
+  const handleSubmit = () => {
     let errors = 0;
     if (form.cluster === "" || form.cluster == null) {
       setClusterErr(true);
@@ -413,7 +442,77 @@ export default function CreateRequest() {
     if (errors > 0) {
       setcreating(false);
     }
+
     if (errors <= 0) {
+      handleClickOpen()
+    }
+  };
+  const handleReset = () => {
+    setForm({
+      cluster: "",
+      subCluster: "",
+      grade: "",
+      reqGrade: "",
+      stack: "d",
+      skill: "d",
+      jd: "d",
+      startDate: null,
+      createdDate: date(new Date()),
+      projectCode: "1",
+      landed: "",
+      owner: { userName },
+      reasonForDemand: "",
+      location: "",
+      area: "",
+      serviceLine: "d",
+      bucketSkills: "d",
+    });
+    setcreating(false)
+    setClusterErr(false);
+    setSubClusterErr(false);
+    setGradeErr(false);
+    setStackErr(false);
+    setSkillErr(false);
+    setJdErr(false);
+    setProjCodeErr(false);
+    setLandedErr(false);
+    setDemandErr(false);
+    setLocationErr(false);
+    setAreaErr(false);
+    setStartDateErr(false);
+    setServiceErr(false);
+    setBucketErr(false)
+  };
+  const classes = useStyles();
+
+
+  const createButtonHandle = () => {
+    handleSubmit();
+  };
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = (event) => {
+    setOpen(false);
+    handleCreate(event.target.value)
+  };
+
+  const handleCreate = (id) => {
+    let idCreating = Number(id)
+    // console.log(idCreating);
+    if (idCreating === 0) {
+      console.log(idCreating);
+      setCreate(false)
+      setcreating(false)
+      window.location.reload(false);
+      // handleReset()
+    }
+    else if (idCreating === 1) {
+      console.log(idCreating);
+      setCreate(true)
+      setcreating(true);
       const createReq = {
         clusterId: form.cluster,
         subClusterId: form.subCluster,
@@ -432,64 +531,32 @@ export default function CreateRequest() {
         reasonForDemand: form.reasonForDemand,
         workLocation: form.location,
         area: form.area,
+        serviceLine: form.serviceLine,
+        bucketSkills: form.bucketSkills,
+        tags: form.tags,
         status: "open",
       };
-      // console.log(createReq);
 
+      console.log(createReq);
       /* sending post request*/
+
       demandTrackerServices
         .createRequest(createReq)
         .then((res) => {
-          EmailService.send(res.data.reqId, "create");
+          // EmailService.send(res.data.reqId, "create");
+          console.log(res.data);
           setTimeout(() => {
             setcreating(false);
             history.push(`/edit-request/${res.data.reqId}`);
           }, 2000);
         })
         .catch((err) => { });
-    }
-  };
-  const handleReset = (event) => {
-    setForm({
-      cluster: "",
-      subCluster: "",
-      grade: "",
-      reqGrade: "",
-      stack: "",
-      skill: "",
-      jd: "",
-      startDate: null,
-      createdDate: date(new Date()),
-      projectCode: "",
-      landed: "",
-      owner: { userName },
-      reasonForDemand: "",
-      location: "",
-      area: "",
-      serviceLine:"",
-      bucketErr: "",
-    });
-    setClusterErr(false);
-    setSubClusterErr(false);
-    setGradeErr(false);
-    setStackErr(false);
-    setSkillErr(false);
-    setJdErr(false);
-    setProjCodeErr(false);
-    setLandedErr(false);
-    setDemandErr(false);
-    setLocationErr(false);
-    setAreaErr(false);
-    setStartDateErr(false);
-    setServiceErr(false);
-  };
-  const classes = useStyles();
-  const [creating, setcreating] = useState(false);
 
-  const createButtonHandle = () => {
-    setcreating(true);
-    handleSubmit();
-  };
+    }
+
+
+  }
+
 
   return (
     <div>
@@ -554,7 +621,7 @@ export default function CreateRequest() {
               )}
             </FormControl>
           </Grid>
-
+          {/* sub cluster */}
           <Grid item md={3} sm={6} xs={12}>
             <FormControl size="small" fullWidth>
               <InputLabel id="demo-simple-select-label">Sub Cluster</InputLabel>
@@ -585,7 +652,7 @@ export default function CreateRequest() {
               )}
             </FormControl>
           </Grid>
-
+          {/* grade */}
           <Grid item md={3} sm={6} xs={12}>
             <FormControl size="small" fullWidth>
               <InputLabel id="demo-simple-select-label">Grade ID</InputLabel>
@@ -618,7 +685,7 @@ export default function CreateRequest() {
               )}
             </FormControl>
           </Grid>
-
+          {/* selected grade */}
           <Grid item md={3} sm={6} xs={12}>
             <FormControl size="small" fullWidth>
               <TextField
@@ -652,7 +719,7 @@ export default function CreateRequest() {
               )}
             </FormControl>
           </Grid>
-
+          {/* Core Skill */}
           <Grid item md={3} sm={6} xs={12}>
             <FormControl fullWidth>
               <TextField
@@ -672,7 +739,7 @@ export default function CreateRequest() {
               )}
             </FormControl>
           </Grid>
-
+          {/* date */}
           <Grid item md={3} sm={6} xs={12}>
             <LocalizationProvider dateAdapter={AdapterDateFns}>
               <DatePicker
@@ -700,7 +767,7 @@ export default function CreateRequest() {
               )}
             </LocalizationProvider>
           </Grid>
-
+          {/* created date */}
           <Grid item md={3} sm={6} xs={12}>
             <FormControl fullWidth>
               <TextField
@@ -749,10 +816,10 @@ export default function CreateRequest() {
                 <MenuItem value="">
                   <em>Landed</em>
                 </MenuItem>
-                {landedData.map((x) => {
+                {landedData.map((landedValue, i) => {
                   return (
-                    <MenuItem key={x.landedId} value={x.landedId}>
-                      {x.landed}
+                    <MenuItem key={i} value={landedValue}>
+                      {landedValue}
                     </MenuItem>
                   );
                 })}
@@ -834,8 +901,6 @@ export default function CreateRequest() {
                   <TextField
                     size="small"
                     label="If Replacement"
-                    multiline
-                    rows="1"
                     name="ifReplacement"
                     value={form.ifReplacement || ""}
                     onChange={handleIfreplacementChange}
@@ -949,8 +1014,6 @@ export default function CreateRequest() {
               <TextField
                 size="small"
                 label="Service Line"
-                multiline
-                rows="1"
                 name="serviceLine"
                 value={form.serviceLine || ""}
                 onChange={handleServicelineChange}
@@ -971,8 +1034,6 @@ export default function CreateRequest() {
               <TextField
                 size="small"
                 label="Bucket Skills"
-                multiline
-                rows="1"
                 name="bucketSkills"
                 value={form.bucketSkills || ""}
                 onChange={handleBucketskillsChange}
@@ -991,28 +1052,8 @@ export default function CreateRequest() {
           {/* Top 3 Skills */}
           <Grid item md={12} sm={12} xs={12}>
             <FormControl fullWidth>
-              {/* <TextField
-                size="small"
-                label="Top 3 Skills"
-                multiline
-                rows="1"
-                name="top"
-                // value={form.top || ""}
-                value={form.top || ""}
-                onChange={handleTop3skillsChange}
-                onClick={handleChipArray()}
-                autoComplete="off"
-              /> */}
-              {handleChipArray()}
-              {/* {jdErr ? (
-                <FormHelperText className={classes.errorMes}>
-                  {jdErrMsg}
-                </FormHelperText>
-              ) : (
-                <p></p>
-              )} */}
-              {/* <ChipArray /> */}
-              {/* <Chip/> */}
+              {/* {handleChipArray()} */}
+              {/* <Chips chips={[]} placeholder="Add a tag..." max="3" /> */}
             </FormControl>
           </Grid>
           {/* Reset and create */}
@@ -1049,6 +1090,24 @@ export default function CreateRequest() {
           </Grid>
         </Grid>
       </Toolbar>
+      <Dialog
+        open={open}
+        TransitionComponent={Transition}
+        keepMounted
+        onClose={handleClose}
+        aria-describedby="alert-dialog-slide-description"
+      >
+        <DialogTitle>{"Alert!"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-slide-description">
+            Are you sure you want to create this request?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} value={1}>Yes</Button>
+          <Button onClick={handleClose} value={0}>No</Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 }

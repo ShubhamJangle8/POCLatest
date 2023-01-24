@@ -14,11 +14,19 @@ export default class DemandTrackerServices {
   getRequest(id) {
     return axios.get(`${this.baseUrl}/grade/get/${id}`);
   }
+  getLandedRequest(id) {
+    return axios.get(`${this.baseUrl}/landed/get/${id}`);
+  }
 
   getAllClusters(subclusters) {
     return axios.get(`${this.baseUrl}/clus/getAll`, {
       params: { clustersOnly: subclusters },
     });
+  }
+
+  getAllLandedData(){
+    // console.log(axios.get(`${this.baseUrl}/landed/getAll`));
+    return axios.get(`${this.baseUrl}/landed/getAll`)
   }
 
   getAllGrades() {

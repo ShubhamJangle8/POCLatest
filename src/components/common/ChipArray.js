@@ -14,15 +14,19 @@ const useStyles = makeStyles({
 
 export default function ChipArray({ ...props }) {
     const classes = useStyles();
-    const { selectedTags, placeholder, tags, ...other } = props;
+    const { selectedTags, placeholder, handleTags, tags, ...other } = props;
     const [inputValue, setInputValue] = React.useState("");
     const [selectedItem, setSelectedItem] = React.useState([]);
     useEffect(() => {
         setSelectedItem(tags);
     }, [tags]);
     useEffect(() => {
+        handleTags(selectedItem);
+    },[selectedItem])
+    useEffect(() => {
         selectedTags(selectedItem);
     }, [selectedItem, selectedTags]);
+
 
     function handleKeyDown(event) {
         if (event.key === "Enter") {
@@ -49,10 +53,11 @@ export default function ChipArray({ ...props }) {
             setSelectedItem(selectedItem.slice(0, selectedItem.length - 1));
         }
     }
+    console.log(props);
     function handleChange(item) {
         let newSelectedItem = [...selectedItem];
         console.log(newSelectedItem, 'hi');
-        if(newSelectedItem.length > 3){
+        if (newSelectedItem.length > 3) {
             newSelectedItem = [...newSelectedItem, null];
         }
         else if (newSelectedItem.indexOf(item) === -1) {
@@ -80,40 +85,42 @@ export default function ChipArray({ ...props }) {
                 onChange={handleChange}
                 selectedItem={selectedItem}
             >
-                {({ getInputProps }) => {
-                    const { onBlur, onChange, onFocus, ...inputProps } = getInputProps({
-                        onKeyDown: handleKeyDown,
-                        placeholder
-                    });
-                    return (
-                        <div>
-                            <TextField
-                                InputProps={{
-                                    startAdornment: selectedItem.map(item => (
-                                        <Chip
-                                            style= {{marginRight: '5px'}}
-                                            key={item}
-                                            tabIndex={-1}
-                                            label={item}
-                                            className={classes.chip}
-                                            onDelete={handleDelete(item)}
-                                        />
-                                    )),
-                                    onBlur,
-                                    onChange: event => {
-                                        handleInputChange(event);
-                                        onChange(event);
-                                    },
-                                    onFocus
-                                
-                                }}
-                                {...other}
-                                {...inputProps}
-                                className={classes.textField}
-                            />
-                        </div>
-                    );
-                }}
+                {
+                    ({ getInputProps }) => {
+                        const { onBlur, onChange, onFocus, ...inputProps } = getInputProps({
+                            onKeyDown: handleKeyDown,
+                            placeholder
+                        });
+                        return (
+                            <div>
+                                <TextField
+                                    InputProps={{
+                                        startAdornment: selectedItem.map(item => (
+                                            <Chip
+                                                style={{ marginRight: '5px' }}
+                                                key={item}
+                                                tabIndex={-1}
+                                                label={item}
+                                                className={classes.chip}
+                                                onDelete={handleDelete(item)}
+                                            />
+                                        )),
+                                        onBlur,
+                                        onChange: event => {
+                                            handleInputChange(event);
+                                            onChange(event);
+                                        },
+                                        onFocus
+
+                                    }}
+                                    {...other}
+                                    {...inputProps}
+                                    className={classes.textField}
+                                />
+
+                            </div>
+                        );
+                    }}
             </Downshift>
         </React.Fragment>
     );

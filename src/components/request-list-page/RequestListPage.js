@@ -10,6 +10,7 @@ import TableRow from "@mui/material/TableRow";
 import Header from "../common/MenuBarLatest";
 import Toolbar from "@mui/material/Toolbar";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+import FileUploadIcon from '@mui/icons-material/FileUpload';
 import DemandTrackerServices from "../../services/DemandTrackerServices";
 import { useState, useEffect } from "react";
 import IconButton from "@mui/material/IconButton";
@@ -180,6 +181,10 @@ export default function RequestListPage() {
       <Toolbar>
         <Header selectedFilters={filterOptions} />
       </Toolbar>
+      <div className="" style={{backgroundColor: 'white', display: 'inline-block'}}>
+        <FileUploadIcon
+          style={{ fontSize: "30px", marginLeft: '330px',marginTop:'10px', color: 'blue' }}
+        /></div>
 
       <Paper
         sx={{
@@ -191,6 +196,7 @@ export default function RequestListPage() {
           marginBottom: { xs: "20px", md: 0 },
         }}
       >
+
         <TableContainer
           sx={{
             minHeight: 380,

@@ -36,6 +36,7 @@ import MuiAlert from "@mui/material/Alert";
 import { DatePicker, LocalizationProvider } from "@mui/lab";
 import AdapterDateFns from "@mui/lab/AdapterDateFns";
 import { PMO_ROLE, REQ_ROLE, ALL_STATUS_OBJ } from "../../constants/Constants";
+import ChipArray from "../common/ChipArray";
 
 export default function EditRequest() {
   const useStyles = makeStyles((theme) => ({
@@ -65,6 +66,7 @@ export default function EditRequest() {
   const history = useHistory();
   const { id } = useParams();
   const [gradeData, setGradeData] = useState([]);
+  const [landedData, setLandedData] = useState([]);
   const [form, setForm] = useState({
     reqId: "",
     clusterId: "",
@@ -72,17 +74,23 @@ export default function EditRequest() {
     gradeId: "",
     techStack: "",
     coreSkill: "",
+    projectCode: "",
+    landed: "",
+    reasonForDemand: "",
+    ifReplacement: "",
     skillDetails: "",
     startDate: "",
     createdDate: "",
     ownerId: "",
     ownerName: "",
-    reasonForDemand: "",
     workLocation: "",
     area: "",
+    serviceLine: "",
+    bucketSkills: "",
     status: "",
     soNumber: "",
     comment: "",
+    tags: ""
   });
   const demandTrackerServices = new DemandTrackerServices();
   const [modifyButton, setModifyButton] = useState(false);
@@ -92,13 +100,29 @@ export default function EditRequest() {
   const [cancelButton, setCancelButton] = useState(false);
   const [skillErrMsg, setSkillErrMsg] = useState();
   const [stackErrMsg, setStackErrMsg] = useState();
+  const [locationErrMsg, setLocationErrMsg] = useState();
+  const [landedErrMsg, setLandedErrMsg] = useState();
+  const [projectCodeErrMsg, setProjectCodeErrMsg] = useState();
+  const [serviceLineErrMsg, setServiceLineErrMsg] = useState();
+  const [bucketSkillsErrMsg, setBucketSkillsErrMsg] = useState();
+  const [areaErrMsg, setAreaErrMsg] = useState();
+  const [reasonForDemandErrMsg, setReasonForDemandErrMsg] = useState();
+  const [ifReplacementErrMsg, setIfReplacementErrMsg] = useState();
+  const [tagsErrMsg, setTagsErrMsg] = useState();
   const [jdErrMsg, setJdErrMsg] = useState();
   const [gradeErr, setGradeErr] = useState(false);
   const [stackErr, setStackErr] = useState(false);
   const [skillErr, setSkillErr] = useState(false);
   const [jdErr, setJdErr] = useState(false);
   const [demandErr, setDemandErr] = useState(false);
+  const [ifReplacementErr, setIfReplacementErr] = useState(false);
   const [locationErr, setLocationErr] = useState(false);
+  const [landedErr, setLandedErr] = useState(false);
+  const [projectCodeErr, setProjectCodeErr] = useState(false);
+  const [serviceLineErr, setServiceLineErr] = useState(false);
+  const [bucketSkillsErr, setBucketSkillsErr] = useState(false);
+  const [tagsErr, setTagsErr] = useState(false);
+  const [reasonForDemandErr, setReasonForDemandErr] = useState(false);
   const [areaErr, setAreaErr] = useState(false);
   const [statusErr, setStatusErr] = useState(false);
   const [soNumErr, setSoNumErr] = useState(false);
@@ -229,6 +253,16 @@ export default function EditRequest() {
           console.log(err);
         });
     }
+    if (KeyCloakServices.getRole() === REQ_ROLE) {
+      demandTrackerServices
+        .getAllLandedData()
+        .then((res) => {
+          setLandedData(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
   }, []);
 
   const dateConverter = (date) => {
@@ -246,11 +280,56 @@ export default function EditRequest() {
     setForm({ ...form, [event.target.name]: event.target.value });
     setDemandErr(false);
   };
+  const handleReplacementChange = (event) => {
+    setForm({ ...form, [event.target.name]: event.target.value });
+    // setReplacementErr(false);
+  };
   const handleLocationChange = (event) => {
     setForm({ ...form, [event.target.name]: event.target.value });
     setLocationErr(false);
   };
   const handleAreaChange = (event) => {
+    setForm({ ...form, [event.target.name]: event.target.value });
+    setAreaErr(false);
+  };
+  const handleProjectCodeChange = (event) => {
+    setForm({ ...form, [event.target.name]: event.target.value });
+    setAreaErr(false);
+  };
+  const handleServiceLineChange = (event) => {
+    setForm({ ...form, [event.target.name]: event.target.value });
+    setAreaErr(false);
+  };
+  const handleBucketSkillsChange = (event) => {
+    setForm({ ...form, [event.target.name]: event.target.value });
+    setAreaErr(false);
+  };
+
+  const handleTagsChange = (items) => {
+    setForm({ ...form, 'tags': items });
+  }
+
+  const handleSelectedTags = (items) => {
+    console.log(items);
+  }
+
+  const handleChipArray = () => {
+    // console.log(chipData);
+    return (
+      <ChipArray
+        selectedTags={handleSelectedTags}
+        fullWidth
+        variant="outlined"
+        id="tags"
+        name="tags"
+        label="Top 3 Skills"
+        rows='1'
+        handleTags={(items) => handleTagsChange(items)}
+      />
+    )
+  }
+
+  const handleLandedChange = (event) => {
     setForm({ ...form, [event.target.name]: event.target.value });
     setAreaErr(false);
   };
@@ -312,16 +391,22 @@ export default function EditRequest() {
       techStack: form.techStack,
       coreSkill: form.coreSkill,
       skillDetails: form.skillDetails,
+      area: form.area,
+      status: form.status,
+      reasonForDemand: form.reasonForDemand,
+      ifReplacement: form.ifReplacement,
+      projectCode: form.projectCode,
+      landed: form.landed,
+      serviceLine: form.serviceLine,
+      bucketSkills: form.bucketSkills,
       startDate: date(new Date(startDate)),
       createdDate: form.createdDate,
       ownerId: form.ownerId,
       ownerName: form.ownerName,
-      reasonForDemand: form.reasonForDemand,
       workLocation: form.workLocation,
-      area: form.area,
-      status: form.status,
       soNumber: form.soNumber,
       comment: form.comment,
+      tags: form.tags
     };
     /* sending updated request*/
     // console.log(editReq);
@@ -359,6 +444,7 @@ export default function EditRequest() {
       status: "withdraw",
       soNumber: form.soNumber,
       comment: form.comment,
+      tags: form.tags,
     };
     demandTrackerServices
       .updateRequest(editReq)
@@ -647,75 +733,270 @@ export default function EditRequest() {
             </FormControl>
           </Grid>
           {/* area */}
-          <Grid item md={3} sm={6} xs={12}>
-            <FormControl fullWidth>
-              <TextField
-                size="small"
-                label="Area"
-                value={form.ownerName || ""}
-                disabled={true}
-              />
-              <p></p>
+          <Grid item md={form.reasonForDemand === 'New' || form.reasonForDemand === '' ? 4 : 3} sm={6} xs={12}>
+            <FormControl fullWidth size="small">
+              {modifyButton || KeyCloakServices.getRole() !== REQ_ROLE ? (
+                <TextField
+                  size="small"
+                  label="Area"
+                  value={form.area || ""}
+                  disabled={true}
+                />
+              ) : (
+                <>
+                  <InputLabel id="demo-simple-select-label">Area</InputLabel>
+                  <Select
+                    size="small"
+                    label="Area"
+                    required
+                    aria-label=".form-select-sm example"
+                    name="area"
+                    value={form.area || ""}
+                    onChange={handleAreaChange}
+                  >
+                    <MenuItem value="">
+                      <em>Select Area</em>
+                    </MenuItem>
+                    <MenuItem value="SLF">SLF</MenuItem>
+                    <MenuItem value="BD">BD</MenuItem>
+                    <MenuItem value="GOV">GOV</MenuItem>
+                  </Select>
+                </>
+              )}
+
+              {areaErr ? (
+                <FormHelperText className={classes.errorMes}>
+                  Area is Required.
+                </FormHelperText>
+              ) : (
+                <p></p>
+              )}
             </FormControl>
           </Grid>
           {/* location */}
-          <Grid item md={3} sm={6} xs={12}>
-            <FormControl fullWidth>
-              <TextField
-                size="small"
-                label="Location"
-                value={form.ownerName || ""}
-                disabled={true}
-              />
-              <p></p>
+          <Grid item md={form.reasonForDemand === 'New' || form.reasonForDemand === '' ? 4 : 3} sm={6} xs={12}>
+            <FormControl fullWidth size="small">
+              {modifyButton || KeyCloakServices.getRole() !== REQ_ROLE ? (
+                <TextField
+                  size="small"
+                  label="Location"
+                  value={form.workLocation || ""}
+                  disabled={true}
+                />
+              ) : (
+                <>
+                  <InputLabel id="demo-simple-select-label">
+                    Location
+                  </InputLabel>
+                  <Select
+                    size="small"
+                    label="Location"
+                    required
+                    name="workLocation"
+                    value={form.workLocation || ""}
+                    onChange={handleLocationChange}
+                  >
+                    <MenuItem value="">
+                      <em>Select Location</em>
+                    </MenuItem>
+                    <MenuItem value="Bengaluru">Bengaluru</MenuItem>
+                    <MenuItem value="Hyderabad">Hyderabad</MenuItem>
+                    <MenuItem value="Mumbai">Mumbai</MenuItem>
+                    <MenuItem value="Noida">Noida</MenuItem>
+                    <MenuItem value="Chennai">Chennai</MenuItem>
+                  </Select>
+                </>
+              )}
+              {locationErr ? (
+                <FormHelperText className={classes.errorMes}>
+                  Location is Required.
+                </FormHelperText>
+              ) : (
+                <p></p>
+              )}
             </FormControl>
           </Grid>
           {/* reason for demand */}
-          <Grid item md={3} sm={6} xs={12}>
-            <FormControl fullWidth>
-              <TextField
-                size="small"
-                label="Reason for demand"
-                value={form.ownerName || ""}
-                disabled={true}
-              />
-              <p></p>
-            </FormControl>
-          </Grid>
+          {
+            form.reasonForDemand === 'New' || form.reasonForDemand === '' ?
+              <Grid item md={4} sm={12} xs={12}>
+                <FormControl size="small" fullWidth>
+                  {modifyButton || KeyCloakServices.getRole() !== REQ_ROLE ? (
+                    <TextField
+                      size="small"
+                      label="Reason For Demand"
+                      value={form.reasonForDemand || ""}
+                      disabled={true}
+                    />
+                  ) : (
+                    <>
+                      <InputLabel id="demo-simple-select-label">
+                        Reason For Demand
+                      </InputLabel>
+                      <Select
+                        required
+                        label="Reason For Demand"
+                        value={form.reasonForDemand || ""}
+                        name="reasonForDemand"
+                        onChange={handleDemandChange}
+                        autoComplete="off"
+                      >
+                        <MenuItem value="">
+                          <em>Select Reason</em>
+                        </MenuItem>
+                        <MenuItem value="New">New</MenuItem>
+                        <MenuItem value="Replacement">Replacement</MenuItem>
+                      </Select>
+                    </>
+                  )}
+                  {demandErr ? (
+                    <FormHelperText className={classes.errorMes}>
+                      Reason is Required.
+                    </FormHelperText>
+                  ) : (
+                    <p></p>
+                  )}
+                </FormControl>
+              </Grid> :
+              <Grid item md={3} sm={6} xs={12}>
+                <FormControl size="small" fullWidth>
+                  {modifyButton || KeyCloakServices.getRole() !== REQ_ROLE ? (
+                    <TextField
+                      size="small"
+                      label="Reason For Demand"
+                      value={form.reasonForDemand || ""}
+                      disabled={true}
+                    />
+                  ) : (
+                    <>
+                      <InputLabel id="demo-simple-select-label">
+                        Reason For Demand
+                      </InputLabel>
+                      <Select
+                        required
+                        label="Reason For Demand"
+                        value={form.reasonForDemand || ""}
+                        name="reasonForDemand"
+                        onChange={handleDemandChange}
+                        autoComplete="off"
+                      >
+                        <MenuItem value="">
+                          <em>Select Reason</em>
+                        </MenuItem>
+                        <MenuItem value="New">New</MenuItem>
+                        <MenuItem value="Replacement">Replacement</MenuItem>
+                      </Select>
+                    </>
+                  )}
+                  {demandErr ? (
+                    <FormHelperText className={classes.errorMes}>
+                      Reason is Required.
+                    </FormHelperText>
+                  ) : (
+                    <p></p>
+                  )}
+                </FormControl>
+              </Grid>
+
+          }
+
           {/* if replacement */}
-          <Grid item md={3} sm={6} xs={12}>
-            <FormControl fullWidth>
-              <TextField
-                size="small"
-                label="If replacement"
-                value={form.ownerName || ""}
-                disabled={true}
-              />
-              <p></p>
-            </FormControl>
-          </Grid>
+          {
+            form.reasonForDemand === 'Replacement' ?
+              <Grid item md={3} sm={6} xs={12}>
+                <FormControl fullWidth>
+                  <TextField
+                    size="small"
+                    label="If Replacement"
+                    required
+                    name="ifReplacement"
+                    value={form.ifReplacement || ""}
+                    onChange={handleReplacementChange}
+                    autoComplete="off"
+                    disabled={
+                      modifyButton || KeyCloakServices.getRole() !== REQ_ROLE
+                    }
+                  />
+                  {ifReplacementErr ? (
+                    <FormHelperText className={classes.errorMes}>
+                      {ifReplacementErrMsg}
+                    </FormHelperText>
+                  ) : (
+                    <p></p>
+                  )}
+                </FormControl>
+              </Grid>
+              : <></>
+          }
+
           {/* project code */}
           <Grid item md={3} sm={6} xs={12}>
             <FormControl fullWidth>
               <TextField
                 size="small"
-                label="Project code"
-                value={form.ownerName || ""}
-                disabled={true}
+                label="Project Code"
+                name="projectCode"
+                value={form.projectCode || ""}
+                required
+                onChange={handleProjectCodeChange}
+                autoComplete="off"
+                disabled={
+                  modifyButton || KeyCloakServices.getRole() !== REQ_ROLE
+                }
               />
-              <p></p>
+              {projectCodeErr ? (
+                <FormHelperText className={classes.errorMes}>
+                  {projectCodeErrMsg}
+                </FormHelperText>
+              ) : (
+                <p></p>
+              )}
             </FormControl>
           </Grid>
           {/* landed */}
           <Grid item md={3} sm={6} xs={12}>
-            <FormControl fullWidth>
-              <TextField
-                size="small"
-                label="Landed"
-                value={form.ownerName || ""}
-                disabled={true}
-              />
-              <p></p>
+            <FormControl fullWidth size="small">
+              {modifyButton || KeyCloakServices.getRole() !== REQ_ROLE ? (
+                <TextField
+                  size="small"
+                  label="Landed"
+                  value={form.landed || ""}
+                  name="landed"
+                  disabled={true}
+                />
+              ) : (
+                <>
+                  <InputLabel id="demo-simple-select-label">
+                    Landed
+                  </InputLabel>
+                  <Select
+                    size="small"
+                    name="landed"
+                    label="Landed"
+                    required
+                    value={form.landed || ""}
+                    onChange={handleLandedChange}
+                  >
+                    <MenuItem value="">
+                      <em>Select Grade ID</em>
+                    </MenuItem>
+                    {landedData.map((object, i) => {
+                      return (
+                        <MenuItem key={i} value={object}>
+                          {object}
+                        </MenuItem>
+                      );
+                    })}
+                  </Select>
+                </>
+              )}
+              {landedErr ? (
+                <FormHelperText className={classes.errorMes}>
+                  Landed Data is Required.
+                </FormHelperText>
+              ) : (
+                <p></p>
+              )}
             </FormControl>
           </Grid>
           {/* service line */}
@@ -723,11 +1004,23 @@ export default function EditRequest() {
             <FormControl fullWidth>
               <TextField
                 size="small"
-                label="Service line"
-                value={form.ownerName || ""}
-                disabled={true}
+                label="Service Line"
+                name="serviceLine"
+                value={form.serviceLine || ""}
+                required
+                onChange={handleServiceLineChange}
+                autoComplete="off"
+                disabled={
+                  modifyButton || KeyCloakServices.getRole() !== REQ_ROLE
+                }
               />
-              <p></p>
+              {serviceLineErr ? (
+                <FormHelperText className={classes.errorMes}>
+                  {serviceLineErrMsg}
+                </FormHelperText>
+              ) : (
+                <p></p>
+              )}
             </FormControl>
           </Grid>
           {/* bucket skills */}
@@ -735,11 +1028,23 @@ export default function EditRequest() {
             <FormControl fullWidth>
               <TextField
                 size="small"
-                label="Bucket skills"
-                value={form.ownerName || ""}
-                disabled={true}
+                label="Bucket Skills"
+                name="bucketSkills"
+                value={form.bucketSkills || ""}
+                required
+                onChange={handleBucketSkillsChange}
+                autoComplete="off"
+                disabled={
+                  modifyButton || KeyCloakServices.getRole() !== REQ_ROLE
+                }
               />
-              <p></p>
+              {bucketSkillsErr ? (
+                <FormHelperText className={classes.errorMes}>
+                  {bucketSkillsErrMsg}
+                </FormHelperText>
+              ) : (
+                <p></p>
+              )}
             </FormControl>
           </Grid>
           {/* owner */}
@@ -915,7 +1220,7 @@ export default function EditRequest() {
             </FormControl>
           </Grid>
           {/* so number */}
-          <Grid item md={4} sm={6} xs={12}>
+          <Grid item md={4} sm={12} xs={12}>
             <FormControl fullWidth>
               <TextField
                 size="small"
@@ -929,19 +1234,16 @@ export default function EditRequest() {
             </FormControl>
           </Grid>
           {/* Top 3 skills */}
-          <Grid item xs={6} sm={12} md={6}>
+          <Grid item xs={12} sm={12} md={6}>
             <FormControl fullWidth>
-              <TextField
-                size="small"
-                label="top 3 skills"
-                multiline
-                rows="2"
-                name="comment"
-                onChange={handleCommentChange}
-                value="Top 3 skills"
-                // {form.comment == null ? "" : form.comment}
-                disabled={enablePmoFields}
-              />
+              {handleChipArray()}
+              {tagsErr ? (
+                <FormHelperText className={classes.errorMes}>
+                  {tagsErrMsg}
+                </FormHelperText>
+              ) : (
+                <p></p>
+              )}
             </FormControl>
           </Grid>
           {/* Comment */}
