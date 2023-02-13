@@ -1,0 +1,22 @@
+.fileUploadButton{
+    /* background-color: white; */
+    display: flex;
+    cursor: pointer;
+    margin-left: 20%;
+    margin-top: 1%;
+    border: none;
+    width: 100vw;
+    justify-content: flex-start;
+}
+
+@media only screen and (max-width: 1250px){
+    .fileUploadButton{
+        justify-content: flex-end;
+        margin-left: -1%;
+    }
+}
+@media only screen and (max-width: 950px){
+    .fileUploadButton{
+        margin-left: -2%;
+    }
+}

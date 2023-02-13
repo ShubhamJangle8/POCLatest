@@ -10,7 +10,8 @@ import TableRow from "@mui/material/TableRow";
 import Header from "../common/MenuBarLatest";
 import Toolbar from "@mui/material/Toolbar";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import FileUploadIcon from '@mui/icons-material/FileUpload';
+import FileDownloadIcon from '@mui/icons-material/FileDownload';
+import DatasetIcon from '@mui/icons-material/Dataset';
 import DemandTrackerServices from "../../services/DemandTrackerServices";
 import { useState, useEffect } from "react";
 import IconButton from "@mui/material/IconButton";
@@ -21,6 +22,7 @@ import { Box } from "@mui/material";
 import Tooltip from "@mui/material/Tooltip";
 import KeyCloakServices from "../../services/LoginService";
 import Link from "@mui/material/Link";
+import './RequestListPage.css';
 import {
   CANCELLED_COLOR,
   CLOSED_COLOR,
@@ -31,6 +33,12 @@ import {
   REQ_ROLE,
   WITHDRAW_COLOR,
 } from "../../constants/Constants";
+
+import Button from '@mui/material/Button';
+import DeleteIcon from '@mui/icons-material/Delete';
+import SendIcon from '@mui/icons-material/Send';
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
+import Stack from '@mui/material/Stack';
 
 const columns = [
   { id: "reqId", label: "ID", minWidth: 80, maxWidth: 150, align: "right" },
@@ -92,6 +100,7 @@ export default function RequestListPage() {
   const history = useHistory();
   const demandTrackerServices = new DemandTrackerServices();
   const [rows, setRows] = useState([]);
+  const [openbutton, setOpenbutton] = useState(false)
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -131,6 +140,19 @@ export default function RequestListPage() {
     setAnchorEl(null);
     setCurrentReqId(null);
   };
+
+  const [anchorUploadEl, setAnchorUploadEl] = useState(null);
+
+  const handleUploadClick = (event) => {
+    setAnchorUploadEl(event.currentTarget);
+  };
+
+  const handleUploadClose = () => {
+    setAnchorUploadEl(null);
+  };
+
+  const openUploadButton = Boolean(anchorUploadEl);
+  const uploadId = openUploadButton ? 'simple-popover' : undefined;
 
   const handleEdit = () => {
     history.push(`/edit-request/${currentReqId}`);
@@ -176,15 +198,54 @@ export default function RequestListPage() {
     return `${readableTime} ago`;
   };
 
+
+
   return (
     <>
       <Toolbar>
         <Header selectedFilters={filterOptions} />
       </Toolbar>
-      <div className="" style={{backgroundColor: 'white', display: 'inline-block'}}>
-        <FileUploadIcon
-          style={{ fontSize: "30px", marginLeft: '330px',marginTop:'10px', color: 'blue' }}
-        /></div>
+      <div className="fileUploadButton">
+        <Button
+
+          onClick={handleUploadClick}
+          // loading={creating}
+          startIcon={<FileDownloadIcon
+            style={{ fontSize: "30px", color: 'blue', float: 'left' }}
+          />}
+          variant="outlined"
+          size="small"
+        // style={{ fontWeight: "bold", letterSpacing: "1px" }}
+
+        >Export</Button>
+      </div>
+
+      <Popover
+        id={id}
+        open={openUploadButton}
+        anchorEl={anchorUploadEl}
+        onClose={handleUploadClose}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "left",
+        }}
+        transformOrigin={{
+          vertical: "center",
+          horizontal: "left",
+        }}
+      >
+        {/* <Typography sx={{ p: 2 }}>The content of the Popover.</Typography> */}
+        <Stack direction="row">
+          <button variant="outlined" style={{ cursor: 'pointer' }}>
+            <PictureAsPdfIcon />
+          </button>
+          <button variant="outlined" style={{ cursor: 'pointer' }}>
+            <DatasetIcon />
+          </button>
+        </Stack>
+      </Popover>
+
+
 
       <Paper
         sx={{
