@@ -1052,7 +1052,7 @@ export default function CreateRequest() {
           {/* Top 3 Skills */}
           <Grid item md={12} sm={12} xs={12}>
             <FormControl fullWidth>
-              {/* {handleChipArray()} */}
+              {handleChipArray()}
               {/* <Chips chips={[]} placeholder="Add a tag..." max="3" /> */}
             </FormControl>
           </Grid>
