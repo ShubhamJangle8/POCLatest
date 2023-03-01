@@ -60,7 +60,7 @@ const KeyCloakServices = {
   initKeycloak,
   doLogout,
   isLoggedIn,
-  getToken,
+  // getToken,
   getUsername,
   getName,
   getUserId,
