@@ -116,6 +116,7 @@ export default function RequestListPage() {
   useEffect(() => {
     demandTrackerServices.getAllRequestsWithFilter(criteria).then((res) => {
       setRows(res.data);
+      console.log(res.data)
     });
   }, []);
 
@@ -145,7 +146,31 @@ export default function RequestListPage() {
 
   const handleUploadClick = (event) => {
     setAnchorUploadEl(event.currentTarget);
+
   };
+
+  const handleUploadExcel = () => {
+    demandTrackerServices.exportExcelData(rows).then((response) => {
+      console.log(response.data);
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'Request.xlsx');
+      document.body.appendChild(link);
+      link.click();
+    });
+  }
+  const handleUploadPdf = () => {
+    demandTrackerServices.exportPdfData(rows).then((response) => {
+      // console.log(response.data);
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'Request.pdf');
+      document.body.appendChild(link);
+      link.click();
+    });
+  }
 
   const handleUploadClose = () => {
     setAnchorUploadEl(null);
@@ -234,12 +259,12 @@ export default function RequestListPage() {
       >
         {/* <Typography sx={{ p: 2 }}>The content of the Popover.</Typography> */}
         <Stack direction="row">
-          <button variant="outlined" style={{ cursor: 'pointer' }}>
+          <Button variant="outlined" style={{ cursor: 'pointer' }} onClick={handleUploadPdf}>
             <PictureAsPdfIcon />
-          </button>
-          <button variant="outlined" style={{ cursor: 'pointer' }}>
+          </Button>
+          <Button variant="outlined" style={{ cursor: 'pointer' }} onClick={handleUploadExcel}>
             <DatasetIcon />
-          </button>
+          </Button>
         </Stack>
       </Popover>
 

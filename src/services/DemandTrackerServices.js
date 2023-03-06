@@ -69,4 +69,17 @@ export default class DemandTrackerServices {
   detailData(subclusterDetail) {
     return axios.post(`${statisticsUrl}/detail-data`, subclusterDetail);
   }
+
+  exportExcelData(rows){
+    console.log(rows)
+    return axios.post(`${this.baseUrl}/export/excel`, rows, 
+    { responseType: 'arraybuffer' }
+    );
+  }
+  exportPdfData(rows){
+    // console.log(rows)
+    return axios.post(`${this.baseUrl}/export/pdf`, rows, 
+    { responseType: 'arraybuffer' }
+    );
+  }
 }

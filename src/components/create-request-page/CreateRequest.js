@@ -77,7 +77,7 @@ export default function CreateRequest() {
     projectCode: "",
     landed: "",
     top: "",
-    tags: "",
+    chips: "",
     skill: "",
     jd: "",
     startDate: { startDate },
@@ -229,21 +229,21 @@ export default function CreateRequest() {
   };
 
   const handleTop3skillsChange = (items) => {
-    setForm({ ...form, tags: items }); //using single hook
+    setForm({ ...form, chips: items }); //using single hook
   }
 
-  const handleSelectedTags = (items) => {
+  const handleSelectedchips = (items) => {
       console.log(items);
   }
   const handleChipArray = () => {
     // console.log(chipData);
     return (
       <ChipArray
-        selectedTags={handleSelectedTags}
+        selectedTags={handleSelectedchips}
         fullWidth
         variant="outlined"
-        id="tags"
-        name="tags"
+        id="chips"
+        name="chips"
         label="Top 3 Skills"
         rows='1'
         handleTags = {(items) => handleTop3skillsChange(items)}
@@ -533,7 +533,7 @@ export default function CreateRequest() {
         area: form.area,
         serviceLine: form.serviceLine,
         bucketSkills: form.bucketSkills,
-        tags: form.tags,
+        chips: form.chips,
         status: "open",
       };
 
