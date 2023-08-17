@@ -1,9 +1,25 @@
-FROM node:16-alpine3.16
+# Use an official Node.js runtime as the base image
+FROM node:16-alpine3.16 AS builder
 
-WORKDIR /frontend
+# Set the working directory for the frontend
+WORKDIR /app/frontend
 
-COPY . /frontend
-RUN npm install 
+# Copy the frontend application files
+COPY frontend/package*.json ./
+COPY frontend/ .
 
-EXPOSE 3000
-CMD ["npm","start"]
+# Install dependencies and build the frontend
+RUN npm install
+RUN npm run build
+
+# Use a minimal Nginx image for serving the build
+FROM nginx:alpine
+
+# Copy the built frontend from the builder stage to Nginx
+COPY --from=builder /app/frontend/build /usr/share/nginx/html
+
+# Expose the port for Nginx
+EXPOSE 80
+
+# Command to start Nginx
+CMD ["nginx", "-g", "daemon off;"]

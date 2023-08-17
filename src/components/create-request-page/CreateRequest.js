@@ -453,9 +453,9 @@ export default function CreateRequest() {
       subCluster: "",
       grade: "",
       reqGrade: "",
-      stack: "d",
-      skill: "d",
-      jd: "d",
+      stack: "default",
+      skill: "default",
+      jd: "default",
       startDate: null,
       createdDate: date(new Date()),
       projectCode: "1",
@@ -464,8 +464,8 @@ export default function CreateRequest() {
       reasonForDemand: "",
       location: "",
       area: "",
-      serviceLine: "d",
-      bucketSkills: "d",
+      serviceLine: "default",
+      bucketSkills: "default",
     });
     setcreating(false)
     setClusterErr(false);
