@@ -5,8 +5,8 @@ FROM node:16-alpine3.16 AS builder
 WORKDIR /app/frontend
 
 # Copy the frontend application files
-COPY frontend/package*.json ./
-COPY frontend/ .
+COPY package*.json ./
+COPY . .
 
 # Install dependencies and build the frontend
 RUN npm install
